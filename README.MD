@@ -2,24 +2,24 @@
 
 A web-based inventory management system designed to help businesses manage products, stock, sales, and inventory information efficiently.
 
-## 📌 About the Project
+##  About the Project
 
 The Inventory Management System helps businesses keep track of their products and stock levels. It reduces manual work and makes it easier to monitor inventory, manage sales, and generate useful reports.
 
-## ✨ Features
+##  Features
 
-- 📦 Product management
-- 🏷️ Category management
-- 📊 Stock management
-- 🛒 Sales management
-- 🔔 Low-stock alerts
-- 📈 Inventory and sales reports
-- 👥 User management
-- 🔐 User authentication
-- 🧾 Sales records and history
-- 🔎 Search and filter products
+-  Product management
+-  Category management
+-  Stock management
+-  Sales management
+-  Low-stock alerts
+-  Inventory and sales reports
+-  User management
+-  User authentication
+-  Sales records and history
+-  Search and filter products
 
-## 🛠️ Technologies Used
+##  Technologies Used
 
 - HTML
 - CSS
@@ -28,7 +28,7 @@ The Inventory Management System helps businesses keep track of their products an
 - Django
 - PostgreSQL
 
-## 📂 Project Structure
+##  Project Structure
 
 ```text
 Inventory_management_system/
