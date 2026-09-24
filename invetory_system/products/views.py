@@ -29,7 +29,7 @@ class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
         return [IsAdminOrManager()]
 
 class ProductListCreateView(generics.ListCreateAPIView):
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().order_by("name")
     serializer_class = ProductSerializer
     filter_backends = [
         DjangoFilterBackend,
