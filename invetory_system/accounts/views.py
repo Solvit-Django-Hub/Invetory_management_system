@@ -1,38 +1,14 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated , BasePermission
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
 
 
-from .serializers import RegisterSerializer, ProfileUpdateSerializer, UserSerializer
+from .serializers import  ProfileUpdateSerializer, UserSerializer, CreateUserSerializer
 
-class RegisterView(APIView):
 
-    def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
-
-        if serializer.is_valid():
-            user = serializer.save()
-
-            return Response(
-                {
-                    "message": "User registered successfully.",
-                    "user": {
-                        "user_id": user.user_id,
-                        "name": user.name,
-                        "email": user.email,
-                        "role": user.role,
-                    },
-                },
-                status=status.HTTP_201_CREATED,
-            )
-
-        return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST,
-        )
 
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
@@ -92,8 +68,26 @@ class LogoutView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+class IsAdminUser(BasePermission):
+    message = "Only administrators can access this resource."
+
+    def has_permission(self, request, view):
+        return (
+            request.user.is_authenticated
+            and request.user.role == "admin"
+        )
+class IsAdminOrManager(BasePermission):
+    message = "Only administrators and managers can access this resource."
+
+    def has_permission(self, request, view):
+        return (
+            request.user.is_authenticated
+            and request.user.role in ["admin", "manager"]
+        )
+
+
 class UserListView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
     def get(self, request):
         users = User.objects.all()
@@ -101,3 +95,43 @@ class UserListView(APIView):
         serializer = UserSerializer(users, many=True)
 
         return Response(serializer.data)
+
+class CreateUserView(APIView):
+    permission_classes = [IsAdminOrManager]
+
+    def post(self, request):
+
+        
+        if (
+            request.user.role == "manager"
+            and request.data.get("role") == "admin"
+        ):
+            return Response(
+                {
+                    "error": "Managers cannot create admin accounts."
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        serializer = CreateUserSerializer(data=request.data)
+
+        if serializer.is_valid():
+            user = serializer.save()
+
+            return Response(
+                {
+                    "message": "User created successfully.",
+                    "user": {
+                        "user_id": user.user_id,
+                        "name": user.name,
+                        "email": user.email,
+                        "role": user.role,
+                    },
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST,
+        )
